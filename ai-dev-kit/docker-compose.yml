@@ -1,15 +1,4 @@
-version: '3.8'
-
 services:
-  lmstudio:
-    image: ghcr.io/abetlen/lm-studio:latest
-    container_name: lmstudio
-    ports:
-      - "${LMSTUDIO_PORT:-1234}:1234"
-    networks:
-      - ai-net
-    restart: unless-stopped
-
   n8n:
     image: n8nio/n8n
     container_name: n8n
