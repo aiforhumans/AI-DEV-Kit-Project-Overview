@@ -12,6 +12,3 @@ restart:
 
 open:
 	start http://localhost:8501
-
-check:
-	python check_status_autostart.py

@@ -1,0 +1,81 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+    volumes:
+      - ./n8n/config:/home/node/.n8n
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  langchain:
+    build: ./langchain
+    container_name: langchain
+    ports:
+      - "${LANGCHAIN_PORT:-8000}:8000"
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  fastapi:
+    build: ./fastapi-app
+    container_name: fastapi
+    ports:
+      - "${FASTAPI_PORT:-8001}:8001"
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  streamlit:
+    build: ./streamlit-app
+    container_name: streamlit
+    ports:
+      - "${STREAMLIT_PORT:-8501}:8501"
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - ./vector-db:/qdrant/storage
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - ai-net
+    restart: unless-stopped
+
+networks:
+  ai-net:
+    driver: bridge
