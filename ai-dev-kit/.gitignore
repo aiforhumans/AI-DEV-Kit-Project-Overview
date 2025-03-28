@@ -31,3 +31,5 @@ docker-compose.override.yml
 
 # Streamlit cache
 .streamlit/
+# PostgreSQL
+postgres/data/
